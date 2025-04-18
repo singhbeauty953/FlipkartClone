@@ -1,78 +1,133 @@
-import { useState , useContext} from 'react';
-
-import React from 'react'
-import { Box, Button, styled, Typography} from '@mui/material';
+import { useState, useContext } from 'react';
+import { Box, Button, styled, Badge, Typography } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import LoginDialog from '../login/LoginDialog';
 import { DataContext } from '../../context/Dataprovider';
 import Profile from './Profile';
 
-
-
-
-const Wrapper = styled(Box)({
-  display: 'flex',
+// Wrapper for layout
+const Wrapper = styled(Box)(({ theme }) => ({
   margin: '0 3% 0 auto',
-  '& > Button, & > p, & > div': {
-      marginRight: '40px',
-      fontSize: '16px',
-      alignItems: 'center',
-  },
-});
-
-
-
-
-const Container = styled(Box)({
   display: 'flex',
-  alignItems: 'center',
-});
+  '& > *': {
+    marginRight: '40px !important',
+    textDecoration: 'none',
+    color: '#FFFFFF',
+    fontSize: 12,
+    alignItems: 'center',
+    [theme.breakpoints.down('sm')]: {
+      color: '#2874f0',
+      flexDirection: 'column',
+      marginTop: 10,
+      alignItems: 'flex-start',
+    },
+  },
+  [theme.breakpoints.down('sm')]: {
+    display: 'block',
+    alignItems: 'flex-start',
+  },
+}));
 
-const LoginButton = styled(Button)`
-    color:#4980d8;
-    background: #FFF;
-    text-transform: none;
-    padding: 5px 40px;
-    border-radius: 2px;
-    box-shadow: none;
-    font-weight: 600;
-    height: 32px;
+// Highlighted "State" button
+const HighlightedStateButton = styled(Button)`
+  background: linear-gradient(90deg, #ff9933, #ffffff 50%, #138808);
+  color: #000;
+  text-transform: none;
+  font-weight: 600;
+  padding: 6px 24px;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
 
+  &:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
 `;
 
+const LoginButton = styled(Button)(({ theme }) => ({
+  color: 'black',
+  background: '#FFFFFF',
+  textTransform: 'none',
+  fontWeight: 600,
+  borderRadius: 2,
+  padding: '5px 40px',
+  height: 32,
+  boxShadow: 'none',
+  [theme.breakpoints.down('sm')]: {
+    background: '#2874f0',
+    color: '#FFFFFF',
+  },
+}));
 
-function CustomButtons() {
-  
-
-  const [open, setOpen] = useState(false);
-  const {account, setAccount} = useContext(DataContext);
-  const openDialog = ()=>{
-    setOpen(true);
+const CartLink = styled(Link)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  textDecoration: 'none',
+  color: 'white',
+  [theme.breakpoints.down('sm')]: {
+    display: 'block',
+    alignItems: 'flex-start',
+    marginLeft: 0,
+  },
+}));
+const MoreText = styled(Typography)(({ theme }) => ({
+  color: '#FFFFFF',
+  cursor: 'pointer',
+  marginLeft: 20,
+  marginTop: 8,
+  fontSize: 16,
+  [theme.breakpoints.down('sm')]: {
+    marginTop: 10,
+    marginLeft: 0,
+    color: '#2874f0'
   }
+}));
+
+
+const StyledLink = styled(Link)({
+  textDecoration: 'none',
+});
+
+const CustomButtons = () => {
+  const [open, setOpen] = useState(false);
+  const { account, setAccount } = useContext(DataContext);
+
+  const cartDetails = useSelector((state) => state.cart);
+  const { cartItems = [] } = cartDetails;
+
+  const openDialog = () => setOpen(true);
+
   return (
     <Wrapper>
-    
-  {account ? 
-   <Profile account = {account} setAccount={setAccount}/>
-  : 
-    <LoginButton aria-label="Login button" variant="contained" onClick={openDialog}>
-      Login
-    </LoginButton>
-  }
+      {account ? (
+        <Profile account={account} setAccount={setAccount} />
+      ) : (
+        <LoginButton onClick={openDialog}>Login</LoginButton>
+      )}
 
-       
-       <Typography style={{marginTop: 3, width: 135}}>Become a Seller</Typography>
-       <Typography style={{marginTop: 3}}>More</Typography>
-       <Container>
-        <ShoppingCartIcon/>
-        <Typography>Cart</Typography>
-       </Container>
-       <LoginDialog open = {open} setOpen={setOpen}/>
+      <StyledLink to="/State">
+        <HighlightedStateButton>State</HighlightedStateButton>
+      </StyledLink>
 
+      <MoreText style={{ color: 'white', cursor: 'pointer', marginLeft: 20 }}>
+        More
+      </MoreText>
 
+      <CartLink to="/cart">
+        <Badge badgeContent={cartItems.length} color="secondary">
+          <ShoppingCartIcon />
+        </Badge>
+        <Typography style={{ marginLeft: 5 }}>Cart</Typography>
+      </CartLink>
+
+      <LoginDialog open={open} setOpen={setOpen} />
     </Wrapper>
-  )
-}
+  );
+};
 
-export default CustomButtons
+export default CustomButtons;

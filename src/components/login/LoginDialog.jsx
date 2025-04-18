@@ -13,7 +13,7 @@ const Component = styled(Box)`
 
 
 const Image = styled(Box)`
-  background: #2874f0 url(https://static-assets-web.flixcart.com/www/linchpin/fk-cp-zion/img/login_img_c4a81e.png) center 85% no-repeat;
+  background:rgb(194, 47, 184) url(https://static-assets-web.flixcart.com/www/linchpin/fk-cp-zion/img/login_img_c4a81e.png) center 85% no-repeat;
   height: 83%;
   width: 28%;
   padding: 45px 35px;                   
@@ -40,7 +40,7 @@ const Wrapper = styled(Box)`
 
 const LoginButton = styled(Button)`
 text-transform: none;
-background: #fB641B;
+background:rgb(251, 27, 221);
 color: #fff ;
 height: 48px;
 border-radius: 2px;
@@ -148,18 +148,20 @@ const onValueChange = (e) => {
   setLogin({ ...login, [e.target.name]: e.target.value });
 };
 
-const loginUser=async ()=>{
-  let response= await authenticateLogin(login);
-  console.log(response)
-  if(response.status===200){
-    handleClose();
-    setAccount(response.data.data.firstname);
-  }else{
-    setError(true);
-
+const loginUser = async () => {
+  try {
+    let response = await authenticateLogin(login);
+    if (response && response.status === 200) {
+      handleClose();
+      setAccount(response.data.data.firstname);
+    } else {
+      setError('Invalid username or password');  // Provide a more specific error message
+    }
+  } catch (error) {
+    console.error("Login error: ", error);
+    setError('An error occurred while logging in. Please try again later.');
   }
-
-}
+};
 
   return (
    <Dialog open ={open} onClose={handleClose} PaperProps={{sx:{maxWidth:'unset'}}}>
